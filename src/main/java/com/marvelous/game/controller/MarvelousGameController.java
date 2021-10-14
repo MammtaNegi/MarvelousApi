@@ -31,15 +31,29 @@ public class MarvelousGameController {
 		return inline;
 	}
 	
+	
 	@GetMapping("/callCharacter/{name}")
+	@ResponseStatus(code = HttpStatus.OK)
 	public  Map<String, GameCharacter> callCharacter(@PathVariable String name) {
 		gameCharacters = gameService.callCharacter(name);
 		return gameCharacters;
 	}
 	
 	@GetMapping("/getPower/{name}")
-	public long powerCall(@PathVariable String name) {
-		
-		return  gameService.getPower(name);
+	@ResponseStatus(code = HttpStatus.OK)
+	public long powerCall(@PathVariable String name) throws Exception {
+		long power = gameService.getPower(name);
+		if(power==0) {
+			throw new Exception("Character not present in existing api");
+		}
+		return power ;
 	}
+	
+
+	@ExceptionHandler(Exception.class)
+	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    public String handleMyException(Exception e, WebRequest req) {
+        String responseBody = "Wrong parameters";
+        return responseBody;
+    }
 }
